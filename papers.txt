@@ -1,0 +1,2 @@
+https://conf.researchr.org/details/fse-2025/fse-2025-industry-papers/39/Quantifying-the-benefits-of-code-hints-for-refactoring-deprecated-Java-APIs
+https://conf.researchr.org/details/fse-2025/fse-2025-industry-papers/40/Another-fake-url-for-testing
