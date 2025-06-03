@@ -1,2 +1,5 @@
 https://conf.researchr.org/details/fse-2025/fse-2025-industry-papers/39/Quantifying-the-benefits-of-code-hints-for-refactoring-deprecated-Java-APIs
-https://conf.researchr.org/details/fse-2025/fse-2025-industry-papers/40/Another-fake-url-for-testing
+https://conf.researchr.org/details/fse-2025/fse-2025-industry-papers/6/Pursuit-of-Automotive-Software-Variant-Reduction-for-Engineering-Simplicity
+https://conf.researchr.org/details/fse-2025/fse-2025-industry-papers/42/The-Promise-and-Pitfalls-of-WebAssembly-Perspectives-from-the-Industry
+https://conf.researchr.org/details/fse-2025/fse-2025-industry-papers/1/dl-Detecting-Communication-Deadlocks-in-Deep-Learning-Jobs
+https://conf.researchr.org/details/fse-2025/fse-2025-industry-papers/34/AutoTracer-A-Low-Overhead-Tracing-Framework-for-Autonomous-Driving-System
