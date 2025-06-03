@@ -1,7 +1,7 @@
 import os
 import re
 import json
-from urllib import request
+import requests
 
 
 def fetch_paper(url: str) -> str:
@@ -10,8 +10,9 @@ def fetch_paper(url: str) -> str:
     Zwraca ścieżkę do zapisanego pliku JSON.
     """
     target_url = f"https://r.jina.ai/{url}"
-    with request.urlopen(target_url) as response:
-        text = response.read().decode("utf-8")
+    print(target_url)
+    with requests.get(target_url) as response:
+        text = response.text
     lines = text.splitlines()
 
     title = ""
