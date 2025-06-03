@@ -1,13 +1,12 @@
 import json
 from typing import Dict
+from openai import OpenAI
 
-import openai
+SYSTEM_PROMPT = """You are an expert in analyzing scientific publications. Your task is to extract, based on the title, URL, and abstract of a conference paper, the most important information in the given JSON format.
 
-SYSTEM_PROMPT = """Jesteś ekspertem od analizy publikacji naukowych. Twoim zadaniem jest wyciąganie, na podstawie tytułu, adresu URL i abstraktu artykułu konferencyjnego, najważniejszych informacji w podanym formacie JSON.
+Always respond exclusively in the following format. Fill in each field based on the input data, or write null if the information is not present.
 
-Zawsze odpowiadaj wyłącznie w poniższym formacie. Wypełnij każde pole na podstawie danych wejściowych lub wpisz null, jeśli informacja nie występuje.
-
-Format odpowiedzi:
+Response format:
 
 {
   "title": "...",
@@ -23,31 +22,32 @@ Format odpowiedzi:
   "evaluation": "..."
 }
 
-Definicje pól:
-- "title": tytuł pracy (skróć, usuń nazwę konferencji/sesji)
-- "session": nazwę sesji (np. "Industry Papers"), wyciągnij z tytułu lub url
-- "url": bez zmian
-- "keywords": 3–5 słów kluczowych podsumowujących temat pracy
-- "domain": 2–5 słów, główna dziedzina/dziedziny artykułu
-- "problem": główny problem badawczy/praktyczny artykułu
-- "solution": główne rozwiązanie/metoda/system
-- "results": najważniejsze liczby, efekty, osiągnięcia
-- "conclusion": praktyczne/naukowe znaczenie pracy
-- "tools": nazwy narzędzi, frameworków, jeśli wymieniono
-- "evaluation": sposób ewaluacji (np. eksperymenty, studia przypadków, dane rzeczywiste)
+Field definitions:
+- "title": the paper title (shorten, remove the name of the conference/session)
+- "session": session name (e.g., "Industry Papers"), extract from the title or URL
+- "url": unchanged
+- "keywords": 3–5 keywords summarizing the paper's topic
+- "domain": 2–5 words, the main field(s) of the article
+- "problem": main research/practical problem of the paper
+- "solution": main solution/method/system
+- "results": the most important numbers, effects, achievements
+- "conclusion": practical/scientific significance of the paper
+- "tools": names of tools/frameworks if mentioned
+- "evaluation": method of evaluation (e.g., experiments, case studies, real data)
 
-Odpowiadaj tylko JSON’em, bez komentarzy ani dodatkowych wyjaśnień.
+Respond with JSON only, without comments or additional explanations.
 """
 
-
 def analyze_paper(file_path: str) -> str:
-    """Augment JSON file with data extracted from GPT-4o.
+    """Augment JSON file with data extracted from GPT-4o (OpenAI Python client v1).
 
-    The OpenAI API key should be stored in ``key.txt`` in the current
-    working directory. The function returns the path to the updated file.
+    The OpenAI API key should be stored in ``key.txt`` in the current working directory.
+    Returns the path to the updated file.
     """
     with open("key.txt", "r", encoding="utf-8") as f:
-        openai.api_key = f.read().strip()
+        api_key = f.read().strip()
+
+    client = OpenAI(api_key=api_key)
 
     with open(file_path, "r", encoding="utf-8") as f:
         data: Dict[str, object] = json.load(f)
@@ -58,16 +58,22 @@ def analyze_paper(file_path: str) -> str:
         "abstract": data.get("abstract"),
     }
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4o",
+    response = client.chat.completions.create(
+        model="gpt-4.1",  
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": json.dumps(message, ensure_ascii=False)},
         ],
+        response_format={"type": "text"},
         temperature=0,
+        max_tokens=1024,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0,
     )
 
-    content = response["choices"][0]["message"]["content"]
+    # Odpowiedź jest w response.choices[0].message.content
+    content = response.choices[0].message.content
     analysis = json.loads(content)
 
     data.update(analysis)
