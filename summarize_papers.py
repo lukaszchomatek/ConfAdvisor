@@ -53,7 +53,7 @@ def summarize_papers(papers_dir: str = "papers", output_file: str = "papers_summ
             {"role": "user", "content": user_content},
         ],
         temperature=0.2,
-        max_tokens=1024,
+        max_tokens=8192,
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0,
