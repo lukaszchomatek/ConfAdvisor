@@ -5,7 +5,7 @@
 Install dependencies and start the server:
 
 ```bash
-pip install flask qdrant-client openai
+pip install flask qdrant-client openai markdown
 python webapp.py
 ```
 

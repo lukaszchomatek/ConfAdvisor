@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template_string
+import markdown
 from paper_search import search_by_embedding, list_all_papers
 
 HTML_SEARCH = """
@@ -53,7 +54,7 @@ HTML_SUMMARY = """
         <li class=\"nav-item\"><a class=\"nav-link\" href=\"/\">Search</a></li>
         <li class=\"nav-item\"><a class=\"nav-link active\" href=\"/summary\">Summary</a></li>
       </ul>
-      <pre>{{ summary }}</pre>
+      <div class="markdown-body">{{ summary|safe }}</div>
     </div>
   </body>
 </html>
@@ -75,7 +76,7 @@ def index():
 def summary():
     try:
         with open("papers_summary.txt", "r", encoding="utf-8") as f:
-            content = f.read()
+            content = markdown.markdown(f.read())
     except FileNotFoundError:
         content = "Summary file not found."
     return render_template_string(HTML_SUMMARY, summary=content)
