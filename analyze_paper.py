@@ -20,6 +20,7 @@ Response format:
   "conclusion": "...",
   "tools": ["..."],
   "evaluation": "..."
+  "explanataion": "..."
 }
 
 Field definitions:
@@ -34,6 +35,7 @@ Field definitions:
 - "conclusion": practical/scientific significance of the paper
 - "tools": names of tools/frameworks if mentioned
 - "evaluation": method of evaluation (e.g., experiments, case studies, real data)
+- "explanation": explanation in plain words, what the Authors actually did and how. 2-3 sentences.
 
 Respond with JSON only, without comments or additional explanations.
 """
