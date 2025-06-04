@@ -66,9 +66,32 @@ def search_by_embedding(query: str, limit: int = 5) -> List[Tuple[float, dict]]:
 def search_by_keyword(keyword: str, limit: int = 10) -> List[dict]:
     """Return papers containing the given keyword."""
     client = _qdrant_client()
-    filter_ = rest.Filter(must=[rest.FieldCondition(key="keywords", match=rest.MatchText(text=keyword))])
-    results = client.search(COLLECTION_NAME, query_vector=[0.0] * EMBEDDING_DIM, filter=filter_, limit=limit)
+    filter_ = rest.Filter(
+        must=[rest.FieldCondition(key="keywords", match=rest.MatchText(text=keyword))]
+    )
+    results = client.search(
+        COLLECTION_NAME, query_vector=[0.0] * EMBEDDING_DIM, filter=filter_, limit=limit
+    )
     return [r.payload for r in results]
+
+
+def list_all_papers(batch_size: int = 100) -> List[dict]:
+    """Return all papers stored in the collection."""
+    client = _qdrant_client()
+    offset = None
+    papers = []
+    while True:
+        points, offset = client.scroll(
+            COLLECTION_NAME,
+            limit=batch_size,
+            offset=offset,
+            with_payload=True,
+            with_vectors=False,
+        )
+        papers.extend([p.payload for p in points])
+        if offset is None:
+            break
+    return papers
 
 if __name__ == "__main__":
     import argparse
