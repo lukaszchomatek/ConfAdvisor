@@ -1,0 +1,23 @@
+{
+  "title": "Revisiting How Developers Search for Code After 10 Years",
+  "url": "https://conf.researchr.org/details/fse-2025/fse-2025-research-papers/113/10-years-later-revisiting-how-developers-search-for-code",
+  "abstract": "Code search is an integral part of a developer’s workflow. In 2015, researchers published a paper reflecting on the code search practices of 27 developers. That paper had first-hand accounts for why those developers were using code search, and highlighted how often and in what situations developers were searching for code. In the past decade, much has changed in the landscape of developer support. New languages have emerged, AI for code generation has gained traction, auto-complete in the IDE has gotten better, Q&A forums have increased in popularity, and code repositories are larger than ever. It is worth considering whether those observations from almost a decade ago have stood the test of time.",
+  "session": "Research Papers",
+  "keywords": [
+    "code search",
+    "developer workflow",
+    "AI code generation",
+    "IDE auto-complete",
+    "developer practices"
+  ],
+  "domain": "software engineering, developer tools",
+  "problem": "Understanding how code search practices among developers have evolved over the past decade given significant changes in tools and resources.",
+  "solution": "A comparative study revisiting and updating the findings of a 2015 study on developer code search practices.",
+  "results": "null",
+  "conclusion": "The study provides updated insights into current code search behaviors, reflecting the impact of new technologies and resources on developer workflows.",
+  "tools": [
+    "null"
+  ],
+  "evaluation": "Comparative analysis with previous study; likely interviews or surveys with developers",
+  "explanataion": "The authors revisited a 2015 study on how developers search for code, considering the major changes in developer tools and resources over the past decade. They conducted a new investigation to see if previous findings still hold, providing updated insights into current code search practices."
+}
