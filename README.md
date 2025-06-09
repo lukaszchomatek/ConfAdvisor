@@ -10,3 +10,14 @@ python webapp.py
 ```
 
 The application connects to a local Qdrant instance and requires `key.txt` with an OpenAI API key.
+
+## Preparing visualization data
+
+Generate a file with 2‑D coordinates for all paper embeddings:
+
+```bash
+pip install scikit-learn
+python prepare_viz.py
+```
+
+The resulting `viz_data.json` is used by the visualization tab in the web interface.
