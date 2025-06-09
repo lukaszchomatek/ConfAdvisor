@@ -7,6 +7,7 @@ from paper_search import (
     list_all_keywords,
     search_by_keywords,
 )
+from utils import sort_by_presentation
 
 app = Flask(__name__)
 
@@ -17,6 +18,7 @@ def index():
         papers = [payload for _, payload in search_by_embedding(query, limit=50)]
     else:
         papers = list_all_papers()
+    papers = sort_by_presentation(papers)
     return render_template("index.html", papers=papers, query=query, active="search")
 
 @app.route("/api/search")
@@ -26,6 +28,7 @@ def api_search():
         papers = [payload for _, payload in search_by_embedding(query, limit=50)]
     else:
         papers = list_all_papers()
+    papers = sort_by_presentation(papers)
     return jsonify(papers)
 
 @app.route("/summary")
@@ -77,6 +80,7 @@ def keywords_page():
     mode = request.args.get("mode", "AND").upper()
     keywords = list_all_keywords()
     papers = search_by_keywords(selected, mode, limit=50) if selected else []
+    papers = sort_by_presentation(papers)
     return render_template(
         "keywords.html",
         keywords=keywords,
@@ -92,6 +96,7 @@ def api_keywords():
     selected = request.args.getlist("kw")
     mode = request.args.get("mode", "AND").upper()
     papers = search_by_keywords(selected, mode, limit=50) if selected else []
+    papers = sort_by_presentation(papers)
     return jsonify(papers)
 
 if __name__ == "__main__":
