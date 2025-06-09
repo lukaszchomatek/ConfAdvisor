@@ -77,14 +77,32 @@ def search_by_embedding(query: str, limit: int = 5) -> List[Tuple[float, dict]]:
 
 def search_by_keyword(keyword: str, limit: int = 10) -> List[dict]:
     """Return papers containing the given keyword."""
+    # Dodaj obsługę pustego słowa kluczowego, choć MatchText("")... może działać,
+    # lepiej explicite obsłużyć ten przypadek.
+    if not keyword:
+        return []
+        
     client = _qdrant_client()
+    
+    # Upewnij się, że pole "keywords" w payloadzie jest indeksowane jako text
+    # lub że MatchText działa na Twoich danych.
+    # Jeśli "keywords" to lista stringów, rozważ użycie MatchAny(any=[keyword])
     filter_ = rest.Filter(
         must=[rest.FieldCondition(key="keywords", match=rest.MatchText(text=keyword))]
     )
+    
     results = client.search(
-        COLLECTION_NAME, query_vector=[0.0] * EMBEDDING_DIM, filter=filter_, limit=limit
+        collection_name=COLLECTION_NAME, # Możesz dodać nazwę argumentu dla czytelności
+        query_vector=[0.0] * EMBEDDING_DIM,
+        query_filter=filter_, # <--- ZMIANA TUTAJ: filter na query_filter
+        limit=limit,
+        with_payload=True # <--- DODAJ TO, ABY POBRAĆ PAYLOAD
+        # Opcjonalnie: Możesz dodać `score_threshold=0.0` jeśli używasz query_vector=None,
+        # ale z zerowym wektorem i filtrem może nie być potrzebne, zależy od wersji Qdranta
     )
-    return [r.payload for r in results]
+    
+    # Sprawdź, czy wyniki mają payload.
+    return [r.payload for r in results if hasattr(r, 'payload')] # Upewnij się, że payload istnieje
 
 
 def list_all_papers(batch_size: int = 100) -> List[dict]:
