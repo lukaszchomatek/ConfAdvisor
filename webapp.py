@@ -228,7 +228,7 @@ def affiliations():
     except FileNotFoundError:
         data = {}
     if query:
-        data = {k: v for k, v in data.items() if k.lower() == query}
+        data = {k: v for k, v in data.items() if query in k.lower()}
     return render_template_string(HTML_AFFILIATIONS, data=data, query=query)
 
 
@@ -241,7 +241,7 @@ def authors():
     except FileNotFoundError:
         data = {}
     if query:
-        data = {k: v for k, v in data.items() if k.lower() == query}
+        data = {k: v for k, v in data.items() if query in k.lower()}
     return render_template_string(HTML_AUTHORS, data=data, query=query)
 
 if __name__ == "__main__":
