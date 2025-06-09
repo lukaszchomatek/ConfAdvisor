@@ -47,7 +47,19 @@ def embed_papers(papers_dir: str = "papers") -> None:
         text = _build_text(data)
         response = oa.embeddings.create(input=text, model=EMBEDDING_MODEL)
         vector = response.data[0].embedding
-        payload = data
+        payload = data.copy()
+        authors = data.get("authors")
+        if isinstance(authors, list):
+            formatted = []
+            for a in authors:
+                name = a.get("name")
+                aff = a.get("affiliation")
+                if aff:
+                    formatted.append(f"{name} ({aff})")
+                else:
+                    formatted.append(name)
+            payload["authors"] = "; ".join(filter(None, formatted))
+        payload["presentation"] = data.get("presentation")
         points.append(rest.PointStruct(id=idx, vector=vector, payload=payload))
 
     if points:

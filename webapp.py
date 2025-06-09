@@ -19,6 +19,7 @@ HTML_SEARCH = """
         <li class=\"nav-item\"><a class=\"nav-link active\" href=\"/\">Search</a></li>
         <li class=\"nav-item\"><a class=\"nav-link\" href=\"/summary\">Summary</a></li>
         <li class=\"nav-item\"><a class=\"nav-link\" href=\"/similar\">Similarities</a></li>
+        <li class=\"nav-item\"><a class=\"nav-link\" href=\"/affiliations\">Affiliations</a></li>
       </ul>
       <form method=\"get\" class=\"mb-4\">
         <div class=\"input-group\">
@@ -56,6 +57,7 @@ HTML_SUMMARY = """
         <li class=\"nav-item\"><a class=\"nav-link\" href=\"/\">Search</a></li>
         <li class=\"nav-item\"><a class=\"nav-link active\" href=\"/summary\">Summary</a></li>
         <li class=\"nav-item\"><a class=\"nav-link\" href=\"/similar\">Similarities</a></li>
+        <li class=\"nav-item\"><a class=\"nav-link\" href=\"/affiliations\">Affiliations</a></li>
       </ul>
       <div class="markdown-body">{{ summary|safe }}</div>
     </div>
@@ -80,6 +82,7 @@ HTML_SIMILAR = """
         <li class=\"nav-item\"><a class=\"nav-link\" href=\"/\">Search</a></li>
         <li class=\"nav-item\"><a class=\"nav-link\" href=\"/summary\">Summary</a></li>
         <li class=\"nav-item\"><a class=\"nav-link active\" href=\"/similar\">Similarities</a></li>
+        <li class=\"nav-item\"><a class=\"nav-link\" href=\"/affiliations\">Affiliations</a></li>
       </ul>
       <canvas id=\"scatter\" width=\"600\" height=\"400\"></canvas>
       <script>
@@ -105,6 +108,39 @@ HTML_SIMILAR = """
           }
         });
       </script>
+    </div>
+  </body>
+</html>
+"""
+
+HTML_AFFILIATIONS = """
+<!doctype html>
+<html lang=\"en\">
+  <head>
+    <meta charset=\"utf-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
+    <title>ConfAdvisor - Affiliations</title>
+    <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css\">
+  </head>
+  <body>
+    <div class=\"container py-4\">
+      <h1 class=\"mb-4\">ConfAdvisor</h1>
+      <ul class=\"nav nav-tabs mb-4\">
+        <li class=\"nav-item\"><a class=\"nav-link\" href=\"/\">Search</a></li>
+        <li class=\"nav-item\"><a class=\"nav-link\" href=\"/summary\">Summary</a></li>
+        <li class=\"nav-item\"><a class=\"nav-link\" href=\"/similar\">Similarities</a></li>
+        <li class=\"nav-item\"><a class=\"nav-link active\" href=\"/affiliations\">Affiliations</a></li>
+      </ul>
+      {% for aff, titles in data.items() %}
+      <div class=\"mb-3\">
+        <h5>{{ aff }}</h5>
+        <ul>
+          {% for title in titles %}
+          <li>{{ title }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
     </div>
   </body>
 </html>
@@ -140,6 +176,16 @@ def similar():
     except FileNotFoundError:
         data = []
     return render_template_string(HTML_SIMILAR, data=json.dumps(data))
+
+
+@app.route("/affiliations")
+def affiliations():
+    try:
+        with open("affiliations.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        data = {}
+    return render_template_string(HTML_AFFILIATIONS, data=data)
 
 if __name__ == "__main__":
     app.run(debug=True)
