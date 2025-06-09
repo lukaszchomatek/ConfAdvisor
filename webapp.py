@@ -7,7 +7,12 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return render_template("index.html", active="search")
+    query = request.args.get("q", "").strip()
+    if query:
+        papers = [payload for _, payload in search_by_embedding(query, limit=50)]
+    else:
+        papers = list_all_papers()
+    return render_template("index.html", papers=papers, query=query, active="search")
 
 @app.route("/api/search")
 def api_search():

@@ -4,11 +4,21 @@
 <script src="{{ url_for('static', filename='search.js') }}"></script>
 {% endblock %}
 {% block content %}
-<form id="searchForm" class="mb-4">
+<form id="searchForm" method="get" class="mb-4">
   <div class="input-group">
-    <input type="text" id="query" class="form-control" placeholder="Search">
+    <input type="text" name="q" id="query" class="form-control" placeholder="Search" value="{{ query }}">
     <button class="btn btn-primary" type="submit">Search</button>
   </div>
 </form>
-<div id="results"></div>
+<div id="results">
+  {% for paper in papers %}
+  <div class="card mb-3">
+    <div class="card-body">
+      {% for key, value in paper.items() %}
+      <p><strong>{{ key }}:</strong> {{ value }}</p>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
 {% endblock %}
