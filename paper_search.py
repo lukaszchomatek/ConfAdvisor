@@ -110,7 +110,7 @@ def list_all_keywords(batch_size: int = 100) -> List[str]:
     """Return a sorted list of all unique keywords."""
     keywords = set()
     for paper in list_all_papers(batch_size):
-        for kw in paper.get("keywords", []):
+        for kw in paper.get("keywords") or []:
             if isinstance(kw, str):
                 keywords.add(kw)
     return sorted(keywords)
@@ -122,17 +122,30 @@ def search_by_keywords(keywords: List[str], mode: str = "AND", limit: int = 50) 
         return []
     client = _qdrant_client()
     conditions = [
+        # Upewnij się, że pole "keywords" w payloadzie jest indeksowane jako text
+        # lub że MatchText działa na Twoich danych.
+        # Jeśli "keywords" to lista stringów, rozważ użycie MatchAny/MatchAll
         rest.FieldCondition(key="keywords", match=rest.MatchText(text=kw))
         for kw in keywords
     ]
     if mode.upper() == "OR":
         filter_ = rest.Filter(should=conditions)
-    else:
+    else: # mode.upper() == "AND" lub cokolwiek innego
         filter_ = rest.Filter(must=conditions)
+
     results = client.search(
-        COLLECTION_NAME, query_vector=[0.0] * EMBEDDING_DIM, filter=filter_, limit=limit
+        collection_name=COLLECTION_NAME, # Możesz dodać nazwę argumentu dla czytelności
+        query_vector=[0.0] * EMBEDDING_DIM,
+        query_filter=filter_, # <--- ZMIANA TUTAJ: filter na query_filter
+        limit=limit,
+        with_payload=True # <--- DODAJ TO, ABY POBRAĆ PAYLOAD
+        # Opcjonalnie: Możesz dodać `score_threshold=0.0` jeśli używasz query_vector=None,
+        # ale z zerowym wektorem i filtrem może nie być potrzebne, zależy od wersji Qdranta
     )
-    return [r.payload for r in results]
+    
+    # Sprawdź, czy wyniki mają payload. Czasem w nowszych wersjach SearchResult ma payload
+    # bezpośrednio, czasem trzeba sprawdzić atrybut
+    return [r.payload for r in results if hasattr(r, 'payload')] # Upewnij się, że payload istnieje
 
 if __name__ == "__main__":
     import argparse
