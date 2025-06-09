@@ -20,6 +20,7 @@ HTML_SEARCH = """
         <li class=\"nav-item\"><a class=\"nav-link\" href=\"/summary\">Summary</a></li>
         <li class=\"nav-item\"><a class=\"nav-link\" href=\"/similar\">Similarities</a></li>
         <li class=\"nav-item\"><a class=\"nav-link\" href=\"/affiliations\">Affiliations</a></li>
+        <li class=\"nav-item\"><a class=\"nav-link\" href=\"/authors\">Authors</a></li>
       </ul>
       <form method=\"get\" class=\"mb-4\">
         <div class=\"input-group\">
@@ -58,6 +59,7 @@ HTML_SUMMARY = """
         <li class=\"nav-item\"><a class=\"nav-link active\" href=\"/summary\">Summary</a></li>
         <li class=\"nav-item\"><a class=\"nav-link\" href=\"/similar\">Similarities</a></li>
         <li class=\"nav-item\"><a class=\"nav-link\" href=\"/affiliations\">Affiliations</a></li>
+        <li class=\"nav-item\"><a class=\"nav-link\" href=\"/authors\">Authors</a></li>
       </ul>
       <div class="markdown-body">{{ summary|safe }}</div>
     </div>
@@ -83,6 +85,7 @@ HTML_SIMILAR = """
         <li class=\"nav-item\"><a class=\"nav-link\" href=\"/summary\">Summary</a></li>
         <li class=\"nav-item\"><a class=\"nav-link active\" href=\"/similar\">Similarities</a></li>
         <li class=\"nav-item\"><a class=\"nav-link\" href=\"/affiliations\">Affiliations</a></li>
+        <li class=\"nav-item\"><a class=\"nav-link\" href=\"/authors\">Authors</a></li>
       </ul>
       <canvas id=\"scatter\" width=\"600\" height=\"400\"></canvas>
       <script>
@@ -130,12 +133,50 @@ HTML_AFFILIATIONS = """
         <li class=\"nav-item\"><a class=\"nav-link\" href=\"/summary\">Summary</a></li>
         <li class=\"nav-item\"><a class=\"nav-link\" href=\"/similar\">Similarities</a></li>
         <li class=\"nav-item\"><a class=\"nav-link active\" href=\"/affiliations\">Affiliations</a></li>
+        <li class=\"nav-item\"><a class=\"nav-link\" href=\"/authors\">Authors</a></li>
       </ul>
+      <form method=\"get\" class=\"mb-4\">\n        <div class=\"input-group\">\n          <input type=\"text\" name=\"q\" class=\"form-control\" placeholder=\"Search affiliation\" value=\"{{ query }}\">\n          <button class=\"btn btn-primary\" type=\"submit\">Search</button>\n        </div>\n      </form>
       {% for aff, titles in data.items() %}
       <div class=\"mb-3\">
         <h5>{{ aff }}</h5>
         <ul>
           {% for title in titles %}
+          <li>{{ title }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+  </body>
+</html>
+"""
+
+HTML_AUTHORS = """
+<!doctype html>
+<html lang=\"en\">
+  <head>
+    <meta charset=\"utf-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
+    <title>ConfAdvisor - Authors</title>
+    <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css\">
+  </head>
+  <body>
+    <div class=\"container py-4\">
+      <h1 class=\"mb-4\">ConfAdvisor</h1>
+      <ul class=\"nav nav-tabs mb-4\">
+        <li class=\"nav-item\"><a class=\"nav-link\" href=\"/\">Search</a></li>
+        <li class=\"nav-item\"><a class=\"nav-link\" href=\"/summary\">Summary</a></li>
+        <li class=\"nav-item\"><a class=\"nav-link\" href=\"/similar\">Similarities</a></li>
+        <li class=\"nav-item\"><a class=\"nav-link\" href=\"/affiliations\">Affiliations</a></li>
+        <li class=\"nav-item\"><a class=\"nav-link active\" href=\"/authors\">Authors</a></li>
+      </ul>
+      <form method=\"get\" class=\"mb-4\">\n        <div class=\"input-group\">\n          <input type=\"text\" name=\"q\" class=\"form-control\" placeholder=\"Search author\" value=\"{{ query }}\">\n          <button class=\"btn btn-primary\" type=\"submit\">Search</button>\n        </div>\n      </form>
+      {% for name, info in data.items() %}
+      <div class=\"mb-3\">
+        <h5>{{ name }}</h5>
+        <p><em>{{ info.affiliation }}</em></p>
+        <ul>
+          {% for title in info.papers %}
           <li>{{ title }}</li>
           {% endfor %}
         </ul>
@@ -180,12 +221,28 @@ def similar():
 
 @app.route("/affiliations")
 def affiliations():
+    query = request.args.get("q", "").strip().lower()
     try:
         with open("affiliations.json", "r", encoding="utf-8") as f:
             data = json.load(f)
     except FileNotFoundError:
         data = {}
-    return render_template_string(HTML_AFFILIATIONS, data=data)
+    if query:
+        data = {k: v for k, v in data.items() if k.lower() == query}
+    return render_template_string(HTML_AFFILIATIONS, data=data, query=query)
+
+
+@app.route("/authors")
+def authors():
+    query = request.args.get("q", "").strip().lower()
+    try:
+        with open("authors.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        data = {}
+    if query:
+        data = {k: v for k, v in data.items() if k.lower() == query}
+    return render_template_string(HTML_AUTHORS, data=data, query=query)
 
 if __name__ == "__main__":
     app.run(debug=True)
