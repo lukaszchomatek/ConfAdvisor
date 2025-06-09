@@ -105,6 +105,35 @@ def list_all_papers(batch_size: int = 100) -> List[dict]:
             break
     return papers
 
+
+def list_all_keywords(batch_size: int = 100) -> List[str]:
+    """Return a sorted list of all unique keywords."""
+    keywords = set()
+    for paper in list_all_papers(batch_size):
+        for kw in paper.get("keywords", []):
+            if isinstance(kw, str):
+                keywords.add(kw)
+    return sorted(keywords)
+
+
+def search_by_keywords(keywords: List[str], mode: str = "AND", limit: int = 50) -> List[dict]:
+    """Return papers matching all or any of the given keywords."""
+    if not keywords:
+        return []
+    client = _qdrant_client()
+    conditions = [
+        rest.FieldCondition(key="keywords", match=rest.MatchText(text=kw))
+        for kw in keywords
+    ]
+    if mode.upper() == "OR":
+        filter_ = rest.Filter(should=conditions)
+    else:
+        filter_ = rest.Filter(must=conditions)
+    results = client.search(
+        COLLECTION_NAME, query_vector=[0.0] * EMBEDDING_DIM, filter=filter_, limit=limit
+    )
+    return [r.payload for r in results]
+
 if __name__ == "__main__":
     import argparse
 
