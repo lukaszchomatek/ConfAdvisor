@@ -40,6 +40,29 @@ def summary():
         content = "Summary file not found."
     return render_template("summary.html", summary=content, active="summary")
 
+
+@app.route("/tldr")
+def tldr_view():
+    query = request.args.get("q", "").strip()
+    if query:
+        papers = [payload for _, payload in search_by_embedding(query, limit=50)]
+    else:
+        papers = list_all_papers()
+    papers = sort_by_presentation(papers)
+
+    for p in papers:
+        if "explanation" not in p:
+            p["explanation"] = p.get("explanataion")
+        authors = p.get("authors")
+        if isinstance(authors, list):
+            names = []
+            for a in authors:
+                if isinstance(a, dict) and a.get("name"):
+                    names.append(a["name"])
+            p["authors"] = ", ".join(names)
+
+    return render_template("tldr.html", papers=papers, query=query, active="tldr")
+
 @app.route("/similar")
 def similar():
     try:
