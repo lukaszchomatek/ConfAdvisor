@@ -10,6 +10,8 @@ python webapp.py
 ```
 
 The application connects to a local Qdrant instance and requires `key.txt` with an OpenAI API key.
+Results on the search page are fetched via JavaScript from `/api/search`.
+Templates live in the `templates/` directory and client scripts in `static/`.
 
 ## Preparing visualization data
 

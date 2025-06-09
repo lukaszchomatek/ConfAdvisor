@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %} - Similarities{% endblock %}
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+{% block content %}
+<canvas id="scatter" width="600" height="400"></canvas>
+<script>
+const data = {{ data | safe }};
+const chartData = {
+  datasets: [{
+    label: 'papers',
+    data: data,
+    parsing: { xAxisKey: 'x', yAxisKey: 'y' }
+  }]
+};
+new Chart(document.getElementById('scatter'), {
+  type: 'scatter',
+  data: chartData,
+  options: {
+    plugins: {
+      tooltip: {
+        callbacks: { label: ctx => ctx.raw.title }
+      }
+    }
+  }
+});
+</script>
+{% endblock %}
