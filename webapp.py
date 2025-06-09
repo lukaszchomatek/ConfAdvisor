@@ -1,7 +1,12 @@
 from flask import Flask, request, jsonify, render_template
 import markdown
 import json
-from paper_search import search_by_embedding, list_all_papers
+from paper_search import (
+    search_by_embedding,
+    list_all_papers,
+    list_all_keywords,
+    search_by_keywords,
+)
 
 app = Flask(__name__)
 
@@ -64,6 +69,30 @@ def authors():
     if query:
         data = {k: v for k, v in data.items() if query in k.lower()}
     return render_template("authors.html", data=data, query=query, active="authors")
+
+
+@app.route("/keywords")
+def keywords_page():
+    selected = request.args.getlist("kw")
+    mode = request.args.get("mode", "AND").upper()
+    keywords = list_all_keywords()
+    papers = search_by_keywords(selected, mode, limit=50) if selected else []
+    return render_template(
+        "keywords.html",
+        keywords=keywords,
+        papers=papers,
+        selected=selected,
+        mode=mode,
+        active="keywords",
+    )
+
+
+@app.route("/api/keywords")
+def api_keywords():
+    selected = request.args.getlist("kw")
+    mode = request.args.get("mode", "AND").upper()
+    papers = search_by_keywords(selected, mode, limit=50) if selected else []
+    return jsonify(papers)
 
 if __name__ == "__main__":
     app.run(debug=True)

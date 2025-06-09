@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %} - Keyword Search{% endblock %}
+{% block head %}
+<script src="{{ url_for('static', filename='keywords.js') }}"></script>
+{% endblock %}
+{% block content %}
+<div class="mb-3">
+  <div class="mb-2">
+    <label for="mode" class="form-label">Match mode</label>
+    <select id="mode" class="form-select w-auto d-inline-block">
+      <option value="AND"{% if mode == 'AND' %} selected{% endif %}>AND</option>
+      <option value="OR"{% if mode == 'OR' %} selected{% endif %}>OR</option>
+    </select>
+    <button id="clearKeywords" class="btn btn-secondary btn-sm ms-2">Clear</button>
+  </div>
+  <div id="keywordList" class="mb-3">
+    {% for kw in keywords %}
+    <div class="form-check form-check-inline">
+      <input class="form-check-input kw-box" type="checkbox" value="{{ kw }}" id="kw{{ loop.index }}"{% if kw in selected %} checked{% endif %}>
+      <label class="form-check-label" for="kw{{ loop.index }}">{{ kw }}</label>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<div id="results">
+  {% for paper in papers %}
+  <div class="card mb-3">
+    <div class="card-body">
+      {% for key, value in paper.items() %}
+      <p><strong>{{ key }}:</strong> {{ value }}</p>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
