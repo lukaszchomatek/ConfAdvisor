@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %} - Affiliations{% endblock %}
+{% block content %}
+<form method="get" class="mb-4">
+  <div class="input-group">
+    <input type="text" name="q" class="form-control" placeholder="Search affiliation" value="{{ query }}">
+    <button class="btn btn-primary" type="submit">Search</button>
+  </div>
+</form>
+{% for aff, titles in data.items() %}
+<div class="mb-3">
+  <h5>{{ aff }}</h5>
+  <ul>
+  {% for title in titles %}
+    <li>{{ title }}</li>
+  {% endfor %}
+  </ul>
+</div>
+{% endfor %}
+{% endblock %}
